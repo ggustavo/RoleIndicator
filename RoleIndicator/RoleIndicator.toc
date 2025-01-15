@@ -1,0 +1,9 @@
+## Interface: 30300
+## Title: |cffEA6A00Role Indicator|r   
+## Version: 1.0
+## Notes: Adds an icon to nameplates if the player is a healer or tank
+## Author: Guto <|cff83e22bgithub.com/ggustavo|r>
+
+configs.lua
+nameplates_tracker.lua
+combat_log_events.lua
