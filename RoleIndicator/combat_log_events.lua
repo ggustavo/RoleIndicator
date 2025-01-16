@@ -1,36 +1,56 @@
 local _, addon = ...
 
-local tContains = tContains
-local select = _G.select
-
 ------------------------ COMBAT_LOG_EVENT_UNFILTERED FRAME ----------------------
 local function OnEvent(self, event, ...)
     local _, subevent, _, sourceName, _, _, destName, _, prefixParam1, spell_name, _, suffixParam1, suffixParam2 = ...
     
-    local caster_player = sourceName == UnitName("player")
+    -- Ignore events from the player
+    if sourceName == UnitName("player") then return end
 
-    if tContains(addon.list_spell_healers, spell_name) then
-        if not tContains(addon.list_healers, sourceName) and not caster_player then
-            -- print("Healer: " .. sourceName .. " - " .. spell_name)
-            tinsert(addon.list_healers, sourceName)
+    -- Ignore Mark of Blood heals
+    if spell == "Mark of Blood" and subevent == "SPELL_HEAL" then return end 
+
+    if addon.list_spell_healers[spell_name] then
+        if addon.list_healers[sourceName] == nil then
+            addon:insert_new_role_indicator(sourceName, addon.list_healers, addon.max_healers, addon.current_size.healers)
+            addon:debug("New Healer:", sourceName, spell_name)
             addon:find_nameplates(WorldFrame:GetChildren())
+            return
         end
     end
 
-    if tContains(addon.list_spell_tanks, spell_name) then
-        if spell == "Mark of Blood" and subevent == "SPELL_HEAL" then return end
-        if not tContains(addon.list_tanks, sourceName) and not caster_player then
-            -- print("Tank: " .. sourceName .. " - " .. spell_name)
-            tinsert(addon.list_tanks, sourceName)
+    if addon.list_spell_tanks[spell_name] then
+        if addon.list_tanks[sourceName] == nil then
+            addon:insert_new_role_indicator(sourceName, addon.list_tanks, addon.max_tanks, addon.current_size.tanks)
+            addon:debug("New Tank:", sourceName, spell_name)
             addon:find_nameplates(WorldFrame:GetChildren())
+            return
         end
     end
+
+    -- If the player changes roles, the addon should remove the icon from the nameplate.
+    if addon.list_spells_dps[spell_name] then
+        if addon.list_healers[sourceName] then
+            addon:remove_role_indicator(sourceName, addon.list_healers, addon.current_size.healers)
+            addon:debug("Removing Healer:", sourceName, spell_name)
+            addon:find_nameplates(WorldFrame:GetChildren())
+            return
+        end
+
+        if addon.list_tanks[sourceName] then
+            addon:remove_role_indicator(sourceName, addon.list_tanks, addon.current_size.tanks)
+            addon:debug("Removing Tank:", sourceName, spell_name)
+            addon:find_nameplates(WorldFrame:GetChildren())
+            return
+        end
+    end
+
 end
 local combat_frame = CreateFrame("Frame")
 combat_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 combat_frame:SetScript("OnEvent", OnEvent)
 
-  
+
 ------------------------ TIMER NAMEPLATES FRAME ----------------------
 local timer_frame = CreateFrame("Frame")
 timer_frame.intervalo = 0
@@ -46,9 +66,13 @@ end)
 local player_entering_world_frame = CreateFrame("Frame");
 player_entering_world_frame:RegisterEvent("PLAYER_ENTERING_WORLD");
 local function eventHandler(self, event, ...)
-    -- print("reseting healer and tank lists")
-    addon.list_healers = table.wipe(addon.list_healers)
-    addon.list_tanks = table.wipe(addon.list_tanks)
+    addon:debug("reseting healer and tank lists")
+    for k in pairs(addon.list_healers) do
+        addon.list_healers[k] = nil
+    end
+    for k in pairs(addon.list_tanks) do
+        addon.list_tanks[k] = nil
+    end
 end
 player_entering_world_frame:SetScript("OnEvent", eventHandler);
 
