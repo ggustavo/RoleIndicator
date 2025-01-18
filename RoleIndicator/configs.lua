@@ -7,9 +7,20 @@ addon.list_tanks = {}
 addon.max_healers     = 25 -- maximum number of healers allowed in list_healers
 addon.max_tanks       = 25 -- maximum number of tanks allowed in list_tanks
 
-addon.current_size = {
-    healers = { count = 0 },  -- Tracks the current number of healers in list_healers
-    tanks   = { count = 0 }   -- Tracks the current number of tanks in list_tanks
+addon.list_info = {
+    healers = { 
+        count = 0, 
+        type = "heal", 
+        data = addon.list_healers, 
+        max = addon.max_healers
+    }, 
+    
+    tanks = { 
+        count = 0, 
+        type = "tank", 
+        data = addon.list_tanks,
+        max = addon.max_tanks
+    }    
 }  
 
 addon.hide_level     = true
@@ -19,11 +30,11 @@ addon.nameplate_Y    = 0
 
 addon.nameplate_update_interval = 1.00
 
-addon.debug = false
+addon.debug_mode = false
 
 function addon:debug(...)
-    if addon.debug then
-        print(...)
+    if addon.debug_mode then
+        print("[debug] ", ...)
     end
 end
 
@@ -78,9 +89,10 @@ addon.list_spell_tanks = {
 }
 
 addon.list_spells_dps = {
+
     -- Unholy
     ["Scourge Strike"] = true, 
-    ["Ebon Plague"] = true,
+    ["Summon Gargoyle"] = true,
 
     -- Frost
     ["Frost Strike"] = true, 

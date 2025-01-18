@@ -73,21 +73,24 @@ function addon:find_nameplates(...)
 end
 
 
-function addon:remove_role_indicator(name, list, list_current_size)
-    if list[name] then
-        list[name] = nil
-        list_current_size.count = list_current_size.count - 1 -- Update the size counter
+function addon:remove_role_indicator(name, list_info, spell_name)
+    if list_info.data[name] then
+        list_info.data[name] = nil
+        list_info.count = list_info.count - 1 -- Update the size counter
+
+        addon:debug("Remove", list_info.type, ":", name, "->", spell_name)
+        addon:find_nameplates(WorldFrame:GetChildren())
     end
 end
 
-function addon:insert_new_role_indicator(name, list, list_max_size, list_current_size)
+function addon:insert_new_role_indicator(name, list_info, spell_name)
     -- Remove oldest entry if number of items reaches list_max_size
-    if list_current_size.count >= list_max_size then 
+    if list_info.count >= list_info.max then 
         local oldest_time = GetTime()
         local oldest_name = ""
 
         -- Find the name of the oldest entry
-        for k, v in pairs(list) do -- O(n), where n is the number of healers or tanks in the list
+        for k, v in pairs(list_info.data) do -- O(n), where n is the number of healers or tanks in the list
             if v < oldest_time then
                 oldest_time = v
                 oldest_name = k
@@ -95,10 +98,13 @@ function addon:insert_new_role_indicator(name, list, list_max_size, list_current
         end
 
         -- Remove the oldest entry
-        addon:remove_role_indicator(oldest_name, list, list_current_size)
+        addon:remove_role_indicator(oldest_name, list_info, spell_name)
     end
 
     -- Inserts new entry with name and current time
-    list[name] = GetTime()
-    list_current_size.count = list_current_size.count + 1  -- Update the size counter
+    list_info.data[name] = GetTime()
+    list_info.count = list_info.count + 1  -- Update the size counter
+    
+    addon:debug("New", list_info.type, ":", name, "->", spell_name)
+    addon:find_nameplates(WorldFrame:GetChildren())
 end
