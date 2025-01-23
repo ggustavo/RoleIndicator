@@ -39,7 +39,7 @@ function addon:debug(...)
 end
 
 
--- spells used to identify someone as a healer
+-- Spells used to identify someone as a healer
 addon.list_spell_healers = {
 
     -- Pala Holy
@@ -68,7 +68,7 @@ addon.list_spell_healers = {
     ["Swiftmend"] = true,
 }
 
--- spells used to identify someone as a tank
+-- Spells used to identify someone as a tank
 addon.list_spell_tanks = {
     -- Pala Tank
     ["Holy Shield"] = true, 

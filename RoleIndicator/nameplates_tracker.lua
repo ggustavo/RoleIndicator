@@ -94,11 +94,15 @@ function addon:insert_new_role_indicator(name, list_info, spell_name)
             if v < oldest_time then
                 oldest_time = v
                 oldest_name = k
+
+                addon:debug("---: ", list_info.type, ":", k, "->", v)
             end
         end
+        
+        addon:debug("------------------------ ")
 
         -- Remove the oldest entry
-        addon:remove_role_indicator(oldest_name, list_info, spell_name)
+        addon:remove_role_indicator(oldest_name, list_info, "list full")
     end
 
     -- Inserts new entry with name and current time
