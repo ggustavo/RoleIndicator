@@ -138,7 +138,7 @@ addon.list_spells_dps = {
 
     -- Arms
     ["Mortal Strike"] = true, 
-    ["Unrelenting Assault"] = true, 
+    --["Unrelenting Assault"] = true, 
     ["Second Wind"] = true, 
     ["Trauma"] = true, 
     ["Sweeping Strikes"] = true, 
